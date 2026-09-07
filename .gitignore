@@ -1,0 +1,31 @@
+# ---- secrets: never commit ----
+# Real WiFi credentials, Apps Script URL and shared token live here.
+# Copy config.example.h -> config.h and fill it in locally.
+esp32_home_hub/config.h
+*.local.h
+.env
+.env.*
+!.env.example
+secrets.json
+appsettings.Development.json
+*.pem
+*.key
+
+# ---- build output (stack-agnostic; trimmed once we pick one) ----
+node_modules/
+dist/
+build/
+bin/
+obj/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# ---- editors / OS ----
+.vs/
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+*.swp
