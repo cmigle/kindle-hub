@@ -1,0 +1,344 @@
+{
+  "ok": true,
+  "clock": "09:41",
+  "date": "Wednesday, 18 November",
+  "nextUp": {
+    "title": "Sprint planning",
+    "cal": "Work",
+    "day": "Today",
+    "time": "10:30",
+    "loc": "Room 4B",
+    "epoch": 1794990600
+  },
+  "merged": [
+    {
+      "kind": "chore",
+      "id": "w1",
+      "title": "Sweep + mop kitchen & hallway",
+      "due": "",
+      "src": "Partner"
+    },
+    {
+      "kind": "chore",
+      "id": "w2",
+      "title": "Wipe counters, hob & sink",
+      "due": "",
+      "src": "Me"
+    },
+    {
+      "kind": "chore",
+      "id": "w3",
+      "title": "Bathroom sink + mirror",
+      "due": "",
+      "src": "Me"
+    },
+    {
+      "kind": "chore",
+      "id": "w4",
+      "title": "Rubbish + recycling out",
+      "due": "",
+      "src": "Partner"
+    },
+    {
+      "kind": "task",
+      "id": "t-report",
+      "list": "list0",
+      "title": "Send quarterly report",
+      "due": "19 Nov",
+      "src": "Work"
+    },
+    {
+      "kind": "task",
+      "id": "t-review",
+      "list": "list0",
+      "title": "Review pull request #42",
+      "due": "21 Nov",
+      "src": "Work"
+    },
+    {
+      "kind": "task",
+      "id": "t-insurance",
+      "list": "list1",
+      "title": "Renew car insurance",
+      "due": "25 Nov",
+      "src": "Home"
+    },
+    {
+      "kind": "task",
+      "id": "t-slides",
+      "list": "list0",
+      "title": "Draft workshop slides",
+      "due": "",
+      "src": "Work"
+    },
+    {
+      "kind": "task",
+      "id": "t-plants",
+      "list": "list1",
+      "title": "Repot the plants",
+      "due": "",
+      "src": "Home"
+    }
+  ],
+  "week": [
+    {
+      "day": "Wed",
+      "num": "18",
+      "today": true,
+      "events": [
+        {
+          "t": "10:30",
+          "n": "Sprint planning"
+        },
+        {
+          "t": "15:00",
+          "n": "1:1 with Sam"
+        },
+        {
+          "t": "18:30",
+          "n": "Gym"
+        }
+      ]
+    },
+    {
+      "day": "Thu",
+      "num": "19",
+      "today": false,
+      "events": [
+        {
+          "t": "08:15",
+          "n": "Dentist"
+        },
+        {
+          "t": "11:00",
+          "n": "Design review"
+        }
+      ]
+    },
+    {
+      "day": "Fri",
+      "num": "20",
+      "today": false,
+      "events": [
+        {
+          "t": "12:30",
+          "n": "Team lunch"
+        }
+      ]
+    },
+    {
+      "day": "Sat",
+      "num": "21",
+      "today": false,
+      "events": [
+        {
+          "t": "19:45",
+          "n": "Cinema"
+        }
+      ]
+    },
+    {
+      "day": "Sun",
+      "num": "22",
+      "today": false,
+      "events": [
+        {
+          "t": "10:00",
+          "n": "Market"
+        }
+      ]
+    },
+    {
+      "day": "Mon",
+      "num": "23",
+      "today": false,
+      "events": [
+        {
+          "t": "09:00",
+          "n": "Release"
+        }
+      ]
+    },
+    {
+      "day": "Tue",
+      "num": "24",
+      "today": false,
+      "events": [
+        {
+          "t": "17:00",
+          "n": "Call grandma"
+        }
+      ]
+    }
+  ],
+  "habits": [
+    {
+      "id": "bed",
+      "label": "Make bed",
+      "done": true,
+      "streak": 1,
+      "grid": "1010001"
+    },
+    {
+      "id": "water",
+      "label": "Drink 500ml water",
+      "done": false,
+      "streak": 5,
+      "grid": "1110110"
+    },
+    {
+      "id": "face",
+      "label": "Wash face / skincare",
+      "done": true,
+      "streak": 55,
+      "grid": "1111111"
+    },
+    {
+      "id": "top3",
+      "label": "Set top 3 priorities",
+      "done": true,
+      "streak": 1,
+      "grid": "0111001"
+    },
+    {
+      "id": "deep",
+      "label": "Deep work block",
+      "done": false,
+      "streak": 52,
+      "grid": "1111110"
+    },
+    {
+      "id": "study",
+      "label": "Internship / study",
+      "done": false,
+      "streak": 4,
+      "grid": "0111100"
+    },
+    {
+      "id": "walk",
+      "label": "Walk 8k steps",
+      "done": false,
+      "streak": 5,
+      "grid": "1110100"
+    },
+    {
+      "id": "kitchen",
+      "label": "Kitchen reset",
+      "done": true,
+      "streak": 28,
+      "grid": "1111111"
+    },
+    {
+      "id": "plan",
+      "label": "Plan tomorrow",
+      "done": false,
+      "streak": 26,
+      "grid": "1111110"
+    },
+    {
+      "id": "read",
+      "label": "Read on paper",
+      "done": false,
+      "streak": 3,
+      "grid": "0101010"
+    },
+    {
+      "id": "lights",
+      "label": "Lights out by 23:00",
+      "done": false,
+      "streak": 5,
+      "grid": "1011100"
+    }
+  ],
+  "graph": {
+    "rows": [
+      "30331421334143413344440434",
+      "24421044233243432444433034",
+      "22240442224123332344334433",
+      "2332403134333233340444044-",
+      "1443444413324403344434434-",
+      "1313133321233311344434444-",
+      "0432223341403311444444444-"
+    ],
+    "months": [
+      "May",
+      "Jun",
+      "",
+      "",
+      "",
+      "",
+      "Jul",
+      "",
+      "",
+      "",
+      "Aug",
+      "",
+      "",
+      "",
+      "",
+      "Sep",
+      "",
+      "",
+      "",
+      "Oct",
+      "",
+      "",
+      "",
+      "Nov",
+      "",
+      ""
+    ],
+    "stats": {
+      "total": 1081,
+      "today": 5,
+      "activeDays": 167,
+      "elapsed": 178,
+      "pct": 94,
+      "avg": "6.1",
+      "best": 11,
+      "bestDay": "25 Sep",
+      "dayStreak": 15,
+      "bestHabit": 55
+    }
+  },
+  "bins": [
+    {
+      "label": "General waste",
+      "when": "today"
+    }
+  ],
+  "countdowns": [
+    {
+      "title": "Lisbon",
+      "label": "16 days"
+    }
+  ],
+  "weather": {
+    "now": "3°",
+    "desc": "Overcast",
+    "hi": "4°",
+    "lo": "-1°",
+    "sunrise": "07:54",
+    "sunset": "16:07",
+    "days": [
+      {
+        "day": "Thu",
+        "desc": "Rain",
+        "hi": "5°",
+        "lo": "2°"
+      },
+      {
+        "day": "Fri",
+        "desc": "Snow",
+        "hi": "1°",
+        "lo": "-3°"
+      },
+      {
+        "day": "Sat",
+        "desc": "Mostly clear",
+        "hi": "0°",
+        "lo": "-4°"
+      }
+    ]
+  }
+}
