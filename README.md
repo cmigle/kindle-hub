@@ -1,5 +1,7 @@
 # The Home Hub
 
+[![CI](https://github.com/cmigle/kindle-hub/actions/workflows/ci.yml/badge.svg)](https://github.com/cmigle/kindle-hub/actions/workflows/ci.yml)
+
 A minimalist e-ink desk dashboard for a **non-jailbroken Kindle**. An ESP32
 pulls Google Calendar, Google Tasks and weather through a private Apps Script
 web app, then serves table-based black-and-white HTML on your LAN.
@@ -9,15 +11,55 @@ Data path: **Google ↔ your ESP32 ↔ your Kindle.** Nothing else.
 Interaction is **tap-only** — every task, chore and habit has a 40×40px box.
 There is no text input anywhere; add things from your phone, tick them here.
 
+| FOCUS | PLAN | HABITS |
+|---|---|---|
+| ![FOCUS view](docs/screenshots/focus.png) | ![PLAN view](docs/screenshots/plan.png) | ![HABITS view](docs/screenshots/habits.png) |
+
+<sub>Rendered from the test fixture by the desktop build of `page.h`
+(`test/host/run.sh --preview`), at the Kindle's 800×600 landscape size.</sub>
+
 ```
 kindle-hub/
-├── apps_script/Code.gs          paste into script.google.com
+├── apps_script/
+│   ├── Code.gs                  paste into script.google.com (or clasp push)
+│   └── appsscript.json          manifest: Tasks API, web app access
 ├── esp32_home_hub/
-│   ├── esp32_home_hub.ino       WiFi, sync, HTTP handlers
+│   ├── esp32_home_hub.ino       WiFi, sync, write-behind queue, HTTP handlers
 │   ├── config.example.h         copy to config.h (git-ignored) and fill in
 │   └── page.h                   every byte of HTML/CSS the Kindle sees
-└── README.md
+├── test/
+│   ├── apps_script/             Code.gs under Node with stubbed Google services
+│   └── host/                    page.h compiled on a desktop, render checks
+└── docs/screenshots/
 ```
+
+## How it fits together
+
+```mermaid
+sequenceDiagram
+    participant K as Kindle browser
+    participant E as ESP32
+    participant G as Apps Script web app
+    participant A as Calendar, Tasks, Open-Meteo
+
+    loop every 15 minutes
+        E->>G: GET ?token=…
+        G->>A: every calendar, every task list, forecast
+        G-->>E: one JSON payload (cached 45 s)
+    end
+    K->>E: GET /?view=focus
+    E-->>K: table-only HTML from the last good payload
+    K->>E: tap ✓  GET /done?list=…&id=…
+    E-->>K: 303 to /?view=focus, row already hidden
+    Note over E: queued until the browser has been quiet for 2.5 s
+    E->>G: GET &action=completeTask…
+    G->>A: mark the task completed
+    E->>G: re-sync, then drop the local overlay
+```
+
+The ESP32 is the only thing the Kindle talks to, and it never blocks a page on
+Google: views are rendered from the last payload that parsed and passed, and
+writes go out in the background once the e-ink refresh is over.
 
 ## The three views
 
@@ -81,6 +123,15 @@ finish still counts as yesterday. It's decided in Apps Script
 index 0 = today. Script Properties caps a single value at 9KB; 11 habits × 60
 *dates* would blow that, but 11 × 60 *chars* is under a kilobyte, and the daily
 rollover is one string concat.
+
+---
+
+## What you need
+
+- Any **ESP32** dev board (2.4 GHz WiFi) and a USB power supply
+- A **Kindle** with the Experimental Browser — no jailbreak
+- A **Google account** with Calendar and Tasks
+- Arduino IDE (or `arduino-cli`) with the esp32 core and ArduinoJson 7
 
 ---
 
@@ -298,4 +349,27 @@ Helvetica falling back to Arial for data.
 
 **Tuning the CSS:** open `http://<ip>/?rot=0` in a desktop browser — that's the
 live page, so there's no mockup file to drift out of sync. All styles are in the
-`appendHead()` string in [page.h](esp32_home_hub/page.h).
+`appendHead()` string in [page.h](esp32_home_hub/page.h). Without the hardware,
+`bash test/host/run.sh --preview out` renders the same three pages to `out/`.
+
+---
+
+## 6. Development
+
+None of this needs the hardware or a Google account. Requires Node 22+, a C++17
+compiler and bash.
+
+| Command | What it does |
+|---|---|
+| `npm test` | Runs the real `Code.gs` under Node with in-memory Calendar, Tasks, Properties and Cache: grace streaks, the 04:00 rollover, history shifting, chore rotation, task ordering, calendar bucketing, token checks |
+| `npm run fixture` | Rebuilds [`test/host/fixtures/payload.json`](test/host/fixtures/payload.json) with the real `Code.gs` and sample data |
+| `npm run test:host` | Compiles `page.h` against tiny Arduino shims and the real ArduinoJson, renders all three views from that fixture and checks the Kindle rules: tables only, no inputs, one guarded script, no-cache headers, escaping, the write-behind overlay |
+| `bash test/host/run.sh --preview out` | Same, plus `out/focus.html`, `plan.html` and `habits.html` |
+
+Because the renderer is tested against a payload the backend itself produced, a
+change to the JSON that `Code.gs` sends shows up as a failing firmware test.
+
+[CI](.github/workflows/ci.yml) runs all of the above on every pull request,
+fails if the committed fixture is out of date, and compiles the full sketch for
+the ESP32 with `arduino-cli` (esp32 core 3.3.10, ArduinoJson 7.2.1) — currently
+84 % of flash and 15 % of RAM.
