@@ -27,16 +27,22 @@ export function formatDate(date, tz, pattern) {
   })[t] ?? name(NAMES[t]));
 }
 
+// Script Properties and CacheService; cache entries expire like the real ones
 function store() {
   const m = new Map();
+  const expires = new Map();
+  const live = k => m.has(k) && !(expires.get(k) <= Date.now());
   return {
     map: m,
     getProperty: k => (m.has(k) ? m.get(k) : null),
     setProperty: (k, v) => { m.set(k, String(v)); },
     deleteProperty: k => { m.delete(k); },
-    get: k => (m.has(k) ? m.get(k) : null),
-    put: (k, v) => { m.set(k, String(v)); },
-    remove: k => { m.delete(k); }
+    get: k => (live(k) ? m.get(k) : null),
+    put: (k, v, seconds) => {
+      m.set(k, String(v));
+      if (seconds) expires.set(k, Date.now() + seconds * 1000); else expires.delete(k);
+    },
+    remove: k => { m.delete(k); expires.delete(k); }
   };
 }
 
@@ -102,7 +108,13 @@ export function loadScript({ now, calendars = {}, tasks = {}, weather } = {}) {
           const list = taskLists.find(l => l.id === listId);
           return { items: tasks[list.title].map(t => ({ status: "needsAction", ...t })) };
         },
-        patch: (body, listId, taskId) => patched.push({ body, listId, taskId })
+        patch: (body, listId, taskId) => {
+          patched.push({ body, listId, taskId });
+          // A completed task drops out of later list() calls, as in Google Tasks
+          const list = taskLists.find(l => l.id === listId);
+          const task = list && tasks[list.title].find(t => t.id === taskId);
+          if (task) Object.assign(task, body);
+        }
       }
     },
     UrlFetchApp: {

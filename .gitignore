@@ -15,6 +15,7 @@ esp32_home_hub/config.h
 # ---- host tests and previews ----
 test/host/.deps/
 test/host/build/
+sim/build/
 node_modules/
 
 # ---- editors / OS ----

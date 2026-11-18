@@ -5,7 +5,8 @@
   "scripts": {
     "test": "node --test \"test/apps_script/*.test.mjs\"",
     "fixture": "node test/apps_script/make-fixture.mjs",
-    "test:host": "bash test/host/run.sh"
+    "test:host": "bash test/host/run.sh",
+    "simulate": "node sim/server.mjs"
   },
   "engines": {
     "node": ">=22"

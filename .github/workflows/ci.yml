@@ -34,6 +34,19 @@ jobs:
         with:
           name: kindle-preview
           path: preview/
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Simulator answers a tap end to end
+        run: |
+          SYNC_SECONDS=600 npm run simulate > sim.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://localhost:5182/ > /dev/null && break; sleep 1; done
+          test "$(curl -s 'http://localhost:5182/?view=focus&rot=0' | grep -o "class='box'" | wc -l)" -eq 9
+          curl -s -o /dev/null -w '%{http_code}\n' 'http://localhost:5182/chore?id=w1' | grep -q 303
+          curl -s 'http://localhost:5182/?view=focus&rot=0' | grep -q 'saving 1'
+          for i in $(seq 1 30); do grep -q '0 left' sim.log && break; sleep 1; done
+          test "$(curl -s 'http://localhost:5182/?view=focus&rot=0' | grep -o "class='box'" | wc -l)" -eq 8
+          cat sim.log
 
   firmware:
     name: Compile for ESP32

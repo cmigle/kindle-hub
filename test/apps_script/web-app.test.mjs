@@ -52,3 +52,15 @@ test("actions are routed and validated", () => {
   const score = JSON.parse(props.getProperty("habits")).score["2026-11-18"];
   assert.equal(score, 3, "habit, chore and task all count towards the graph");
 });
+
+test("a completed task and a ticked chore leave the next payload", () => {
+  const { gs, props } = loadScript({ now, tasks: { Work: [{ id: "t1", title: "Report" }, { id: "t2", title: "Slides" }] } });
+  props.setProperty("HUB_TOKEN", "secret");
+  const send = params => call(gs, { token: "secret", ...params });
+  const ids = () => send({}).merged.map(r => r.id);
+
+  assert.deepEqual(ids(), ["w1", "w2", "w3", "w4", "t1", "t2"]);
+  send({ action: "completeTask", list: "list0", id: "t1" });
+  send({ action: "completeChore", id: "w3" });
+  assert.deepEqual(ids(), ["w1", "w2", "w4", "t2"], "writes drop the cached payload");
+});
