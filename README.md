@@ -126,6 +126,15 @@ rollover is one string concat.
 
 ---
 
+## What you need
+
+- Any **ESP32** dev board (2.4 GHz WiFi) and a USB power supply
+- A **Kindle** with the Experimental Browser — no jailbreak
+- A **Google account** with Calendar and Tasks
+- Arduino IDE (or `arduino-cli`) with the esp32 core and ArduinoJson 7
+
+---
+
 ## 1. Google Apps Script
 
 ### 1a. Paste the script
@@ -340,4 +349,27 @@ Helvetica falling back to Arial for data.
 
 **Tuning the CSS:** open `http://<ip>/?rot=0` in a desktop browser — that's the
 live page, so there's no mockup file to drift out of sync. All styles are in the
-`appendHead()` string in [page.h](esp32_home_hub/page.h).
+`appendHead()` string in [page.h](esp32_home_hub/page.h). Without the hardware,
+`bash test/host/run.sh --preview out` renders the same three pages to `out/`.
+
+---
+
+## 6. Development
+
+None of this needs the hardware or a Google account. Requires Node 22+, a C++17
+compiler and bash.
+
+| Command | What it does |
+|---|---|
+| `npm test` | Runs the real `Code.gs` under Node with in-memory Calendar, Tasks, Properties and Cache: grace streaks, the 04:00 rollover, history shifting, chore rotation, task ordering, calendar bucketing, token checks |
+| `npm run fixture` | Rebuilds [`test/host/fixtures/payload.json`](test/host/fixtures/payload.json) with the real `Code.gs` and sample data |
+| `npm run test:host` | Compiles `page.h` against tiny Arduino shims and the real ArduinoJson, renders all three views from that fixture and checks the Kindle rules: tables only, no inputs, one guarded script, no-cache headers, escaping, the write-behind overlay |
+| `bash test/host/run.sh --preview out` | Same, plus `out/focus.html`, `plan.html` and `habits.html` |
+
+Because the renderer is tested against a payload the backend itself produced, a
+change to the JSON that `Code.gs` sends shows up as a failing firmware test.
+
+[CI](.github/workflows/ci.yml) runs all of the above on every pull request,
+fails if the committed fixture is out of date, and compiles the full sketch for
+the ESP32 with `arduino-cli` (esp32 core 3.3.10, ArduinoJson 7.2.1) — currently
+84 % of flash and 15 % of RAM.
