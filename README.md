@@ -18,6 +18,10 @@ There is no text input anywhere; add things from your phone, tick them here.
 <sub>Rendered from the test fixture by the desktop build of `page.h`
 (`test/host/run.sh --preview`), at the Kindle's 800×600 landscape size.</sub>
 
+**Try it without the hardware:** `npm run simulate` and open
+<http://localhost:5182> — the real `Code.gs` and `page.h` with demo data,
+taps included. See [Development](#6-development).
+
 ```
 kindle-hub/
 ├── apps_script/
@@ -365,6 +369,7 @@ compiler and bash.
 | `npm run fixture` | Rebuilds [`test/host/fixtures/payload.json`](test/host/fixtures/payload.json) with the real `Code.gs` and sample data |
 | `npm run test:host` | Compiles `page.h` against tiny Arduino shims and the real ArduinoJson, renders all three views from that fixture and checks the Kindle rules: tables only, no inputs, one guarded script, no-cache headers, escaping, the write-behind overlay |
 | `bash test/host/run.sh --preview out` | Same, plus `out/focus.html`, `plan.html` and `habits.html` |
+| `npm run simulate` | Runs the whole hub on this computer at <http://localhost:5182>: the real `Code.gs` with demo Google data as the backend, the real `page.h` as the renderer, and the ESP32's request handling from `esp32_home_hub.ino` in between — 303 after every tap, the write-behind queue drained after 2.5 s of quiet, the local overlay and periodic sync. The terminal shows the same log as the serial monitor. `SYNC_SECONDS` (default 60) and `ROTATE=1` mimic the device more closely |
 
 Because the renderer is tested against a payload the backend itself produced, a
 change to the JSON that `Code.gs` sends shows up as a failing firmware test.
