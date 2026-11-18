@@ -20,9 +20,9 @@
 
 /* ============================ CONFIG ============================= */
 
+/* The shared secret is NOT kept here: run createToken() once and it lands
+   in Script Properties as HUB_TOKEN. That keeps this file safe to share. */
 var CFG = {
-  TOKEN: 'YOUR_LONG_RANDOM_TOKEN',   // set this in the Apps Script editor
-
   RESET_HOUR: 4,
   HIST_DAYS: 60,          // per-habit history (7 shown, rest feeds streaks)
   SCORE_DAYS: 200,        // daily activity totals kept for the graph
@@ -90,9 +90,15 @@ var CFG = {
 
 /* ============================ ROUTING ============================ */
 
+function hubToken_() {
+  return PropertiesService.getScriptProperties().getProperty('HUB_TOKEN') || '';
+}
+
 function doGet(e) {
   var p = (e && e.parameter) || {};
-  if (p.token !== CFG.TOKEN) return json({ ok: false, error: 'unauthorized' });
+  var token = hubToken_();
+  // An unset token must never match an empty or missing ?token=
+  if (!token || p.token !== token) return json({ ok: false, error: 'unauthorized' });
 
   try {
     switch (p.action) {
@@ -698,6 +704,17 @@ function testRun() {
   Logger.log('BUILD TIME: ' + (new Date().getTime() - t0) + ' ms');
   Logger.log('calendars read: ' + activeCalendars_().length);
   Logger.log(JSON.stringify(p, null, 2));
+}
+
+/**
+ * Run once after pasting the script: creates a random HUB_TOKEN, stores it
+ * in Script Properties and logs it so you can copy it into config.h.
+ * Running it again rotates the token - update config.h to match.
+ */
+function createToken() {
+  var token = (Utilities.getUuid() + Utilities.getUuid()).replace(/-/g, '');
+  PropertiesService.getScriptProperties().setProperty('HUB_TOKEN', token);
+  Logger.log('HUB_TOKEN = ' + token + '   <- paste into config.h');
 }
 
 /** Lists every calendar name, so you know what to put in EXCLUDE_CALENDARS. */
