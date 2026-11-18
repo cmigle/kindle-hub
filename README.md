@@ -1,5 +1,7 @@
 # The Home Hub
 
+[![CI](https://github.com/cmigle/kindle-hub/actions/workflows/ci.yml/badge.svg)](https://github.com/cmigle/kindle-hub/actions/workflows/ci.yml)
+
 A minimalist e-ink desk dashboard for a **non-jailbroken Kindle**. An ESP32
 pulls Google Calendar, Google Tasks and weather through a private Apps Script
 web app, then serves table-based black-and-white HTML on your LAN.
@@ -9,15 +11,55 @@ Data path: **Google ↔ your ESP32 ↔ your Kindle.** Nothing else.
 Interaction is **tap-only** — every task, chore and habit has a 40×40px box.
 There is no text input anywhere; add things from your phone, tick them here.
 
+| FOCUS | PLAN | HABITS |
+|---|---|---|
+| ![FOCUS view](docs/screenshots/focus.png) | ![PLAN view](docs/screenshots/plan.png) | ![HABITS view](docs/screenshots/habits.png) |
+
+<sub>Rendered from the test fixture by the desktop build of `page.h`
+(`test/host/run.sh --preview`), at the Kindle's 800×600 landscape size.</sub>
+
 ```
 kindle-hub/
-├── apps_script/Code.gs          paste into script.google.com
+├── apps_script/
+│   ├── Code.gs                  paste into script.google.com (or clasp push)
+│   └── appsscript.json          manifest: Tasks API, web app access
 ├── esp32_home_hub/
-│   ├── esp32_home_hub.ino       WiFi, sync, HTTP handlers
+│   ├── esp32_home_hub.ino       WiFi, sync, write-behind queue, HTTP handlers
 │   ├── config.example.h         copy to config.h (git-ignored) and fill in
 │   └── page.h                   every byte of HTML/CSS the Kindle sees
-└── README.md
+├── test/
+│   ├── apps_script/             Code.gs under Node with stubbed Google services
+│   └── host/                    page.h compiled on a desktop, render checks
+└── docs/screenshots/
 ```
+
+## How it fits together
+
+```mermaid
+sequenceDiagram
+    participant K as Kindle browser
+    participant E as ESP32
+    participant G as Apps Script web app
+    participant A as Calendar, Tasks, Open-Meteo
+
+    loop every 15 minutes
+        E->>G: GET ?token=…
+        G->>A: every calendar, every task list, forecast
+        G-->>E: one JSON payload (cached 45 s)
+    end
+    K->>E: GET /?view=focus
+    E-->>K: table-only HTML from the last good payload
+    K->>E: tap ✓  GET /done?list=…&id=…
+    E-->>K: 303 to /?view=focus, row already hidden
+    Note over E: queued until the browser has been quiet for 2.5 s
+    E->>G: GET &action=completeTask…
+    G->>A: mark the task completed
+    E->>G: re-sync, then drop the local overlay
+```
+
+The ESP32 is the only thing the Kindle talks to, and it never blocks a page on
+Google: views are rendered from the last payload that parsed and passed, and
+writes go out in the background once the e-ink refresh is over.
 
 ## The three views
 
