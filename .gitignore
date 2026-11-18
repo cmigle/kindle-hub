@@ -5,22 +5,17 @@ esp32_home_hub/config.h
 *.local.h
 .env
 .env.*
-!.env.example
-secrets.json
-appsettings.Development.json
 *.pem
 *.key
 
-# ---- build output (stack-agnostic; trimmed once we pick one) ----
+# ---- Apps Script CLI (clasp): per-user project binding and login ----
+.clasp.json
+.clasprc.json
+
+# ---- host tests and previews ----
+test/host/.deps/
+test/host/build/
 node_modules/
-dist/
-build/
-bin/
-obj/
-__pycache__/
-*.pyc
-.venv/
-venv/
 
 # ---- editors / OS ----
 .vs/
