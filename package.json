@@ -3,7 +3,9 @@
   "private": true,
   "description": "Tests and preview tooling for the Home Hub e-ink dashboard",
   "scripts": {
-    "test": "node --test \"test/apps_script/*.test.mjs\""
+    "test": "node --test \"test/apps_script/*.test.mjs\"",
+    "fixture": "node test/apps_script/make-fixture.mjs",
+    "test:host": "bash test/host/run.sh"
   },
   "engines": {
     "node": ">=22"

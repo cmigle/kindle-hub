@@ -55,8 +55,9 @@ export function event(title, start, { allDay = false, location = "" } = {}) {
  * @param {Date}   [opts.now]        frozen "current" time inside the script
  * @param {object} [opts.calendars]  { name: [event, ...] }
  * @param {object} [opts.tasks]      { listTitle: [{ id, title, due? }] }
+ * @param {object} [opts.weather]    Open-Meteo response to return; omitted = HTTP 503
  */
-export function loadScript({ now, calendars = {}, tasks = {} } = {}) {
+export function loadScript({ now, calendars = {}, tasks = {}, weather } = {}) {
   const props = store();
   const cache = store();
   const logs = [];
@@ -104,7 +105,11 @@ export function loadScript({ now, calendars = {}, tasks = {} } = {}) {
         patch: (body, listId, taskId) => patched.push({ body, listId, taskId })
       }
     },
-    UrlFetchApp: { fetch: () => ({ getResponseCode: () => 503, getContentText: () => "" }) }
+    UrlFetchApp: {
+      fetch: () => weather
+        ? { getResponseCode: () => 200, getContentText: () => JSON.stringify(weather) }
+        : { getResponseCode: () => 503, getContentText: () => "" }
+    }
   };
 
   vm.createContext(context);
