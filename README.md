@@ -10,11 +10,11 @@ Interaction is **tap-only** — every task, chore and habit has a 40×40px box.
 There is no text input anywhere; add things from your phone, tick them here.
 
 ```
-home_hub/
+kindle-hub/
 ├── apps_script/Code.gs          paste into script.google.com
 ├── esp32_home_hub/
 │   ├── esp32_home_hub.ino       WiFi, sync, HTTP handlers
-│   ├── config.h                 ← the only file you edit
+│   ├── config.example.h         copy to config.h (git-ignored) and fill in
 │   └── page.h                   every byte of HTML/CSS the Kindle sees
 └── README.md
 ```
@@ -185,9 +185,10 @@ Libraries**.
 > `DynamicJsonDocument …(16384);`.
 
 ### 2c. Configure
-Everything is in [config.h](esp32_home_hub/config.h) — WiFi, `GAS_URL`,
-`HUB_TOKEN`, timezone, rotation, refresh intervals. Already filled in with your
-values. Sync runs every 15 minutes.
+Copy [config.example.h](esp32_home_hub/config.example.h) to
+`esp32_home_hub/config.h` and fill it in — WiFi, `GAS_URL`, `HUB_TOKEN`,
+timezone, rotation, refresh intervals. `config.h` is git-ignored, so your
+credentials never end up in the repository. Sync runs every 15 minutes.
 
 ### 2d. Flash
 **ESP32 Dev Module** → your COM port → Upload (hold **BOOT** if it stalls on
