@@ -1,0 +1,11 @@
+{
+  "name": "kindle-hub",
+  "private": true,
+  "description": "Tests and preview tooling for the Home Hub e-ink dashboard",
+  "scripts": {
+    "test": "node --test \"test/apps_script/*.test.mjs\""
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
