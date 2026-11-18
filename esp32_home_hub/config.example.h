@@ -12,7 +12,8 @@
 // no query string - the sketch appends ?token=... itself.
 #define GAS_URL     "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"
 
-// Must match CFG.TOKEN in Code.gs, character for character.
+// Must match the HUB_TOKEN script property, character for character.
+// Run createToken() in the Apps Script editor and copy what it logs.
 #define HUB_TOKEN   "YOUR_LONG_RANDOM_TOKEN"
 
 // How long to wait for Apps Script to answer (milliseconds). The response

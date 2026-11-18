@@ -91,13 +91,23 @@ rollover is one string concat.
 2. Delete the stub, paste all of [apps_script/Code.gs](apps_script/Code.gs).
 3. Check `CFG` at the top — see the config table below.
 
+> **Or with [clasp](https://github.com/google/clasp):** `clasp login`, then
+> `clasp create --type webapp --title "Home Hub" --rootDir apps_script` and
+> `clasp push`. [`appsscript.json`](apps_script/appsscript.json) already enables
+> the Tasks API and sets the web app access, so you can skip 1b.
+
 ### 1b. Enable the Tasks API
 Left sidebar → **Services** → **+** → **Tasks API** → **Add**.
 The identifier must stay `Tasks`.
 
-### 1c. Authorise
-Function dropdown → `testRun` → **Run** → *Review permissions* → *Advanced* →
-*Go to Home Hub (unsafe)* → **Allow**. Check **Execution log** for your JSON.
+### 1c. Authorise and create the token
+Function dropdown → `createToken` → **Run** → *Review permissions* → *Advanced* →
+*Go to Home Hub (unsafe)* → **Allow**. The **Execution log** prints
+`HUB_TOKEN = …` — copy it, it goes into `config.h` later. The token is stored
+in **Project Settings → Script properties**, never in the code, so `Code.gs`
+stays safe to share; running `createToken` again rotates it.
+
+Then run `testRun` and check the **Execution log** for your JSON.
 
 > Re-authorise whenever you add a feature that needs a new scope — weather uses
 > `UrlFetchApp` (`script.external_request`). Without fresh consent the *whole*
@@ -113,7 +123,7 @@ Copy the **Web app URL** (`https://script.google.com/macros/s/…/exec`).
 > **Why "Anyone":** it means *no login required to call this URL* — it does
 > **not** publish your code. `Code.gs` lives in your Drive and is never readable
 > by anyone. Google neither lists nor indexes the URL, and `doGet` rejects every
-> request without the right `TOKEN`. An ESP32 cannot complete a Google OAuth
+> request without the right `HUB_TOKEN`. An ESP32 cannot complete a Google OAuth
 > consent screen, so the account-restricted setting would only ever hand it a
 > login page.
 
@@ -259,7 +269,7 @@ Helvetica falling back to Arial for data.
 | Symptom | Cause |
 |---|---|
 | `[GAS] parse error` + HTML in the log | Not deployed as **Anyone** (1d). |
-| `[GAS] rejected: unauthorized` | `HUB_TOKEN` ≠ `CFG.TOKEN`. Check for a trailing space. |
+| `[GAS] rejected: unauthorized` | `HUB_TOKEN` in `config.h` ≠ the `HUB_TOKEN` script property, or `createToken()` was never run. Check for a trailing space. |
 | `[GAS] failed -1` | DNS/TLS. **The ESP32 cannot see 5 GHz WiFi** — it must be on 2.4 GHz. |
 | `SYNC FAILED HTTP -11` / `script too slow` | Read timeout: the connection worked but Apps Script didn't finish in `GAS_TIMEOUT_MS` (30 s). Run `testRun()` and read the **BUILD TIME** it logs. Over ~10 s means too many calendars — run `listCalendars()` and add the noisy ones to `CFG.EXCLUDE_CALENDARS`. |
 | Empty views, `0 rows / 0 habits` | Apps Script not re-deployed as a **new version** (1e). |
