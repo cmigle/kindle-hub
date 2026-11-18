@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  ESP32_CORE: 3.3.10
+  ARDUINOJSON: 7.2.1
+
+jobs:
+  apps-script:
+    name: Apps Script tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+      - name: Render fixture matches the current Code.gs
+        run: |
+          npm run fixture
+          git diff --exit-code test/host/fixtures/payload.json
+
+  renderer:
+    name: Kindle renderer on the host
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash test/host/run.sh --preview preview
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kindle-preview
+          path: preview/
+
+  firmware:
+    name: Compile for ESP32
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.arduino15
+          key: arduino-esp32-${{ env.ESP32_CORE }}-arduinojson-${{ env.ARDUINOJSON }}
+      - uses: arduino/setup-arduino-cli@v2
+      - name: Install the ESP32 core and ArduinoJson
+        run: |
+          arduino-cli config init --overwrite
+          arduino-cli config add board_manager.additional_urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          arduino-cli core update-index
+          arduino-cli core install esp32:esp32@${ESP32_CORE}
+          arduino-cli lib install ArduinoJson@${ARDUINOJSON}
+      - name: Compile with the example settings
+        run: |
+          cp esp32_home_hub/config.example.h esp32_home_hub/config.h
+          arduino-cli compile --fqbn esp32:esp32:esp32 --warnings default esp32_home_hub
